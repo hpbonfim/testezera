@@ -12,14 +12,14 @@ services:
     networks:
       - internet
 
-  vite:
+  nextjs:
     build:
       context: ./
       dockerfile: Dockerfile
     volumes:
       - ./:/project
     ports:
-      - 3000:5173
+      - 3000:3000
 
 volumes:
   portainer:

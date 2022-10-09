@@ -8,10 +8,10 @@ WORKDIR /usr/src/project
 COPY package*.json ./
 
 # building clean install code for production
-RUN npm ci
+RUN npm install -g pnpm && pnpm install
 
 # Bundle app source
 COPY . .
 
 # start the app with secure shell cmd
-ENTRYPOINT ["npm", "run", "dev"]
+ENTRYPOINT ["pnpm", "run", "dev"]
