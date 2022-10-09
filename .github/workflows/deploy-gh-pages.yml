@@ -34,12 +34,10 @@ jobs:
           echo "::set-output name=command::install"
           echo "::set-output name=runner::pnpm"
 
-      - name: Setup Pnpm
+      - name: Setup Pnpm + Node
       - uses: pnpm/action-setup@v2
         with:
           version: latest
-
-      - name: Setup Node
       - uses: actions/setup-node@v3
         with:
           node-version: "16"
