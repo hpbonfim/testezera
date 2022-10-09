@@ -53,7 +53,10 @@ jobs:
         run: ${{ matrix.package-manager }} install
 
       - name: Build with Next.js
-        run: ${{ matrix.package-manager }} build
+        run: ${{ matrix.package-manager }} next build
+
+      - name: Static HTML export with Next.js
+        run: ${{ matrix.package-manager }} next export
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
