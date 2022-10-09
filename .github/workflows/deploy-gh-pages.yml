@@ -34,8 +34,13 @@ jobs:
           echo "::set-output name=command::install"
           echo "::set-output name=runner::pnpm"
 
+      - name: Setup Pnpm
+      - uses: pnpm/action-setup@v2
+        with:
+          version: latest
+
       - name: Setup Node
-        uses: pnpm/action-setup@v2
+      - uses: actions/setup-node@v3
         with:
           node-version: "16"
           cache: ${{ steps.define-package-manager.outputs.manager }}
