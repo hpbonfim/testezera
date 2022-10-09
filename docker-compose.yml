@@ -1,0 +1,30 @@
+version: "3.8"
+services:
+  portainer:
+    image: portainer/portainer-ce:latest
+    restart: always
+    container_name: portainer
+    ports:
+      - "9000:9000"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer:/data
+    networks:
+      - internet
+
+  vite:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    volumes:
+      - ./:/project
+    ports:
+      - 3000:5173
+
+volumes:
+  portainer:
+
+
+networks:
+  internet:
+    name: internet
