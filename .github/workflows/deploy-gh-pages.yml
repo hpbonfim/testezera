@@ -22,26 +22,21 @@ concurrency:
 jobs:
   # Build job
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        node-version: [16]
+        package-manager: [pnpm]
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Detect package manager
-        id: define-package-manager
-        run: |
-          echo "::set-output name=manager::pnpm"
-          echo "::set-output name=command::install"
-          echo "::set-output name=runner::pnpm"
-
-      - name: Setup Pnpm + Node
-      - uses: pnpm/action-setup@v2
+      - uses: actions/checkout@v2
+      - uses: pnpm/action-setup@v2.2.2
         with:
-          version: latest
-      - uses: actions/setup-node@v3
+          version: 7
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
         with:
-          node-version: "16"
-          cache: ${{ steps.define-package-manager.outputs.manager }}
+          node-version: ${{ matrix.node-version }}
+          cache: ${{ matrix.package-manager }}
 
       - name: Restore cache
         uses: actions/cache@v3
@@ -55,13 +50,13 @@ jobs:
             ${{ runner.os }}-nextjs-${{ '**/pnpm-lock.yaml' }}-
 
       - name: Install dependencies
-        run: ${{ steps.define-package-manager.outputs.manager }} ${{ steps.define-package-manager.outputs.command }}
+        run: ${{ matrix.package-manager }} install
 
       - name: Build with Next.js
-        run: ${{ steps.define-package-manager.outputs.runner }} next build
+        run: ${{ matrix.package-manager }} build
 
       - name: Static HTML export with Next.js
-        run: ${{ steps.define-package-manager.outputs.runner }} next export
+        run: ${{ matrix.package-manager }} export
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
