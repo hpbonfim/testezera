@@ -39,6 +39,7 @@ jobs:
         with:
           node-version: "16"
           cache: ${{ steps.define-package-manager.outputs.manager }}
+      - run: npm install -G ${{ steps.define-package-manager.outputs.manager }} && ${{ steps.define-package-manager.outputs.manager }} ${{ steps.define-package-manager.outputs.command }}
 
       - name: Restore cache
         uses: actions/cache@v3
