@@ -1,14 +1,11 @@
 name: Deploy Next.js site to Pages
 
 on:
-  # Runs on pushes targeting the default branch
   push:
-    branches: ["main"]
+    branches: ["stag"]
 
-  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
   contents: read
   pages: write
@@ -19,24 +16,30 @@ concurrency:
   group: "pages"
   cancel-in-progress: true
 
+env:
+  OS: ubuntu-20.04
+
 jobs:
-  # Build job
   build:
-    runs-on: ubuntu-20.04
+    runs-on: ${{ env.OS }}
+
     strategy:
       matrix:
-        node-version: [16]
-        package-manager: [pnpm]
+        NODE-VERSION: [16]
+        PNPM-VERSION: [7]
+        PACKAGE-MANAGER: [pnpm]
+
     steps:
       - uses: actions/checkout@v2
       - uses: pnpm/action-setup@v2.2.2
         with:
-          version: 7
-      - name: Use Node.js ${{ matrix.node-version }}
+          version: ${{ matrix.PNPM-VERSION }}
+
+      - name: Use Node.js ${{ matrix.NODE-VERSION }}
         uses: actions/setup-node@v2
         with:
-          node-version: ${{ matrix.node-version }}
-          cache: ${{ matrix.package-manager }}
+          node-version: ${{ matrix.NODE-VERSION }}
+          cache: ${{ matrix.PACKAGE-MANAGER }}
 
       - name: Restore cache
         uses: actions/cache@v3
@@ -46,30 +49,28 @@ jobs:
           # Generate a new cache whenever packages or source files change.
           key: ${{ runner.os }}-nextjs-${{ '**/pnpm-lock.yaml' }}-${{ hashFiles('**.[jt]s', '**.[jt]sx') }}
           # If source files changed but packages didn't, rebuild from a prior cache.
-          restore-keys: |
-            ${{ runner.os }}-nextjs-${{ '**/pnpm-lock.yaml' }}-
+          restore-keys: ${{ runner.os }}-nextjs-${{ '**/pnpm-lock.yaml' }}-
 
       - name: Install dependencies
-        run: ${{ matrix.package-manager }} install
+        run: ${{ matrix.PACKAGE-MANAGER }} install
 
       - name: Build with Next.js
-        run: ${{ matrix.package-manager }} next build
+        run: ${{ matrix.PACKAGE-MANAGER }} next build
 
       - name: Static HTML export with Next.js
-        run: ${{ matrix.package-manager }} next export
+        run: ${{ matrix.PACKAGE-MANAGER }} next export
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
           path: ./out
 
-  # Deployment job
   deploy:
+    needs: build
+    runs-on: ${{ env.OS }}
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    needs: build
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
