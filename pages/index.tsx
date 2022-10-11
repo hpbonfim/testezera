@@ -12,6 +12,13 @@ const Home: NextPage = () => {
 
   return (
     <Layout>
+      <h1 className="text-6xl font-bold">
+        Bem vindo ao&nbsp;
+        <code className="rounded-md bg-gray-100 p-3 font-mono text-5xl">
+          Teste/z3rA
+        </code>
+      </h1>
+
       <div className="mt-6 flex max-w-4xl flex-wrap items-center justify-around sm:w-full">
         {data.map((p: Person) => <PersonComponent key={p.id} person={p} />)}
       </div>
