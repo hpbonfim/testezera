@@ -9,18 +9,10 @@ on:
 jobs:
   # Run tests (TODO).
   tests:
-    strategy:
-      matrix:
-        NODE-VERSION: [16]
-        PNPM-VERSION: [7]
-        PACKAGE-MANAGER: [pnpm]
-        OS: [ubuntu-latest]
-
-    runs-on: ${{ matrix.OS }}
-
+    runs-on: ubuntu-latest
     steps:
-      - name: Run tests
       - uses: actions/checkout@v2
+      - name: Run tests (TODO)
         run: |
           if [ -f docker-compose.test.yml ]; then
             docker-compose --file docker-compose.test.yml build
@@ -31,7 +23,7 @@ jobs:
 
   deploy:
     needs: tests
-    runs-on: ${{ matrix.OS }}
+    runs-on: ubuntu-latest
 
     permissions:
       contents: read
@@ -46,6 +38,7 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+
       - name: Install cosign # https://github.com/sigstore/cosign-installer
         if: github.event_name != 'pull_request'
         uses: sigstore/cosign-installer@f3c664df7af409cb4873aa5068053ba9d61a57b6 #v2.6.0

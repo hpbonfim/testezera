@@ -21,8 +21,8 @@ jobs:
     strategy:
       matrix:
         NODE-VERSION: [16]
-        PNPM-VERSION: [7]
         PACKAGE-MANAGER: [pnpm]
+        PNPM-VERSION: [7]
         OS: [ubuntu-latest]
 
     runs-on: ${{ matrix.OS }}
@@ -65,10 +65,13 @@ jobs:
 
   deploy:
     needs: build
-    runs-on: ubuntu-latest
+
+    runs-on: ${{ matrix.OS }}
+
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
+
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
