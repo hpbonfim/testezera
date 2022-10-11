@@ -16,18 +16,16 @@ concurrency:
   group: "pages"
   cancel-in-progress: true
 
-env:
-  OS: ubuntu-20.04
-
 jobs:
   build:
-    runs-on: ${{ env.OS }}
-
     strategy:
       matrix:
         NODE-VERSION: [16]
         PNPM-VERSION: [7]
         PACKAGE-MANAGER: [pnpm]
+        OS: [ubuntu-20.04]
+
+    runs-on: ${{ matrix.OS }}
 
     steps:
       - uses: actions/checkout@v2
@@ -67,7 +65,7 @@ jobs:
 
   deploy:
     needs: build
-    runs-on: ${{ env.OS }}
+    runs-on: ubuntu-20.04
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
