@@ -14,4 +14,4 @@ RUN npm install -g pnpm && pnpm install
 COPY . .
 
 # start the app with secure shell cmd
-ENTRYPOINT ["pnpm", "run", "dev"]
+ENTRYPOINT ["pnpm", "start"]
