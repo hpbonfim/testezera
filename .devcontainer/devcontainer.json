@@ -1,0 +1,1 @@
+{ "postAttachCommand": "/bin/bash .devcontainer/setup.sh" }
