@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import useDeepCompareEffectForMaps from '../hooks/useDeepCompareEffectForMaps'
+import { useDeepCompareEffectForMaps } from '@hooks/useDeepCompareEffectForMaps'
 
 interface MapProps extends google.maps.MapOptions {
   style?: { [key: string]: string }

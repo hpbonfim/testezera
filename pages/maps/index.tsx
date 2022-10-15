@@ -1,10 +1,19 @@
-import type { NextPage } from 'next'
-import Map from './map'
-import { Wrapper, Status } from "@googlemaps/react-wrapper"
 import React from 'react'
-import { Marker } from './marker'
+import { Wrapper, Status } from "@googlemaps/react-wrapper"
+import Map from './map'
+import Marker from './marker'
 
-function Component(status: Status): JSX.Element {
+export default React.memo(() => (
+  <Wrapper
+    apiKey={process.env.NEXT_PUBLIC_GOOGLE_API as string}
+    version='weekly'
+    region='BR'
+    language='pt'
+    render={Render}
+  />
+))
+
+function Render(status: Status): JSX.Element {
   const [markers, setMarkers] = React.useState<google.maps.LatLng[]>([])
   const [zoom, setZoom] = React.useState(3)
   const [center, setCenter] = React.useState<google.maps.LatLngLiteral | google.maps.LatLng>({ lat: 0, lng: 0 })
@@ -14,7 +23,7 @@ function Component(status: Status): JSX.Element {
     setZoom(15)
     setCenter(e.latLng!)
   }
-  
+
   switch (status) {
     case Status.LOADING:
       return <div>Carregando...</div>
@@ -27,7 +36,7 @@ function Component(status: Status): JSX.Element {
         <Map
           zoom={zoom}
           center={center}
-          onClick={onClick} 
+          onClick={onClick}
         >
           {markers.map((latLng, i) => (
             <Marker key={i} position={latLng} />
@@ -36,15 +45,3 @@ function Component(status: Status): JSX.Element {
       )
   }
 }
-
-const Index: NextPage = () => (
-  <Wrapper
-    apiKey={process.env.NEXT_PUBLIC_GOOGLE_API as string}
-    version='weekly'
-    region='BR'
-    language='pt'
-    render={Component}
-  />
-)
-
-export default Index
