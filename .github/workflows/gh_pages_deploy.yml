@@ -17,15 +17,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  tests:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Run simple preflight build
-        run: docker build . --file Dockerfile.test
-
   build:
-    needs: tests
     strategy:
       matrix:
         NODE-VERSION: [16]

@@ -7,15 +7,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  tests:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Run simple preflight build
-        run: docker build . --file Dockerfile.test
-
   deploy:
-    needs: tests
     runs-on: ubuntu-latest
 
     permissions:
