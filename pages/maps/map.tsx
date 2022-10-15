@@ -1,13 +1,16 @@
 import React, { useEffect, useRef, useState } from 'react'
+import useDeepCompareEffectForMaps from '../hooks/useDeepCompareEffectForMaps'
 
 interface MapProps extends google.maps.MapOptions {
   style?: { [key: string]: string }
   center?: google.maps.LatLng | google.maps.LatLngLiteral | null | undefined
   zoom?: number | null | undefined
+  onClick?: (e: google.maps.MapMouseEvent) => void
+  children?: React.ReactNode
 }
 
-export const Map: React.FC<MapProps> = ({ ...props }) => {
-  const { style, center, zoom } = props
+const Map: React.FC<MapProps> = ({ ...props }) => {
+  const { style, center, zoom, onClick, children } = props
   const ref = useRef<HTMLDivElement>(null)
   const [map, setMap] = useState<google.maps.Map>()
 
@@ -20,5 +23,21 @@ export const Map: React.FC<MapProps> = ({ ...props }) => {
     }
   }, [ref, map])
 
-  return <div ref={ref} id="map" style={style} />
+  useDeepCompareEffectForMaps(() => map && map.setOptions(props), [map, props])
+
+  useEffect(() => {
+    if (map) {
+      google.maps.event.clearListeners(map, "click")
+      onClick && map.addListener("click", onClick)
+    }
+  }, [map, onClick])
+
+  return (
+    <>
+      <div ref={ref} id="map" style={style} />
+      {React.Children.map(children, (child) => React.isValidElement(child) && React.cloneElement(child, { map } as any))}
+    </>
+  )
 }
+
+export default React.memo(Map)
