@@ -22,7 +22,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Run simple preflight build
-        run: docker build . --file Dockerfile 
+        run: docker build . --file Dockerfile.test
 
   build:
     needs: tests
