@@ -2,7 +2,7 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: ["staging"]
+    branches: ["production"]
 
   workflow_dispatch:
 
@@ -17,7 +17,15 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Run simple preflight build
+        run: docker build . --file Dockerfile 
+
   build:
+    needs: tests
     strategy:
       matrix:
         NODE-VERSION: [16]
@@ -64,7 +72,6 @@ jobs:
 
   deploy:
     needs: build
-
     runs-on: ubuntu-latest
 
     environment:
