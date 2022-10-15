@@ -24,9 +24,8 @@ function useDeepCompareMemoize(value: any) {
   return ref.current
 }
 
-function useDeepCompareEffectForMaps(callback: React.EffectCallback, dependencies: any[]) {
+export function useDeepCompareEffectForMaps(callback: React.EffectCallback, dependencies: any[]) {
   React.useEffect(callback, dependencies.map(useDeepCompareMemoize))
 }
 
-
-export default useDeepCompareEffectForMaps
+ 
