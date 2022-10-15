@@ -1,29 +1,22 @@
-import React, { useEffect, useRef } from 'react'
-import { Loader } from '@googlemaps/js-api-loader'
+import React, { useEffect, useRef, useState } from 'react'
 
-export const Map: React.FC<{ center?: google.maps.LatLng | google.maps.LatLngLiteral | null | undefined, zoom?: number | null | undefined }> = ({ center, zoom }) => {
-  const googlemap = useRef<HTMLDivElement>(null)
+interface MapProps {
+  center?: google.maps.LatLng | google.maps.LatLngLiteral | null | undefined
+  zoom?: number | null | undefined
+}
+
+export const Map: React.FC<MapProps> = ({ center, zoom }) => {
+  const ref = useRef<HTMLDivElement>(null)
+  const [map, setMap] = useState<google.maps.Map>()
 
   useEffect(() => {
-    const loader = new Loader({
-      apiKey: process.env.NEXT_PUBLIC_GOOGLE_API as string,
-      version: 'weekly',
-      region: 'BR',
-      language: 'pt'
-    })
+    if (ref.current && !map) {
+      setMap(new window.google.maps.Map(ref.current || document.getElementById('#map'), {
+        center: center || new google.maps.LatLng(0, 0),
+        zoom: zoom || 3
+      }))
+    }
+  }, [ref, map])
 
-    loader
-      .load()
-      .then((google) => {
-        const map = new google.maps.Map(googlemap.current! || document.getElementById('#map'), {
-          center: center || new google.maps.LatLng(0, 0),
-          zoom: zoom || 3
-        })
-      })
-      .catch((error) => {
-        console.log(error)
-      })
-  })
-
-  return <div ref={googlemap} id="map" />
+  return <div ref={ref} id="map" />
 }
