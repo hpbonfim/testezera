@@ -7,22 +7,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  # Run tests (TODO).
-  tests:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Run tests (TODO)
-        run: |
-          if [ -f docker-compose.test.yml ]; then
-            docker-compose --file docker-compose.test.yml build
-            docker-compose --file docker-compose.test.yml run sut
-          else
-            docker build . --file Dockerfile
-          fi
-
   deploy:
-    needs: tests
     runs-on: ubuntu-latest
 
     permissions:
