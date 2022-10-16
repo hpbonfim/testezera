@@ -3,6 +3,8 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: ["production"]
+    paths:
+      - 'frontend/**'
 
   workflow_dispatch:
 
@@ -11,21 +13,12 @@ permissions:
   pages: write
   id-token: write
 
-# Allow one concurrent deployment
 concurrency:
   group: "pages"
   cancel-in-progress: true
 
 jobs:
-  tests:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Run simple preflight build on frontend
-        run: docker build ./frontend --file Dockerfile.test
-
   build:
-    needs: tests
     strategy:
       matrix:
         NODE-VERSION: [16]
@@ -49,8 +42,8 @@ jobs:
       - name: Restore cache
         uses: actions/cache@v3
         with:
-          context: .
-          path: ./frontend/.next/cache
+          path: |
+            .next/cache
           key: ${{ runner.os }}-nextjs-${{ '**/pnpm-lock.yaml' }}-${{ hashFiles('**.[jt]s', '**.[jt]sx') }}
           restore-keys: ${{ runner.os }}-nextjs-${{ '**/pnpm-lock.yaml' }}-
 
@@ -66,8 +59,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
-          context: .
-          path: ./frontend/out
+          path: ./out
 
   deploy:
     needs: build

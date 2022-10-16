@@ -3,19 +3,13 @@ name: Dockerfile CI/CD
 on:
   push:
     branches: ["production"]
+    paths:
+      - 'frontend/**'
 
   workflow_dispatch:
 
 jobs:
-  tests:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Run simple preflight build on frontend
-        run: docker build ./frontend --file Dockerfile.test
-
   deploy:
-    needs: tests
     runs-on: ubuntu-latest
 
     permissions:
@@ -59,7 +53,6 @@ jobs:
         uses: docker/build-push-action@ac9327eae2b366085ac7f6a2d02df8aa8ead720a
         with:
           context: .
-          file: ./frontend/Dockerfile
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
