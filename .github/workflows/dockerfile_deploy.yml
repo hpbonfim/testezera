@@ -26,7 +26,8 @@ jobs:
       id-token: write
 
     environment:
-      name: package-files
+      name: ${{ matrix.PROJECT_PATH }}-package
+      url: ${{ steps.meta.outputs.tags }}
 
     steps:
       - name: Checkout repository
