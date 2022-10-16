@@ -26,8 +26,19 @@ function Render(status: Status): JSX.Element {
   }
 
   useEffect(() => {
-    getClientGeolocation().then((LatLng) => setLocationAndFocus(LatLng as google.maps.LatLng))
-    getClientInfo().then((info) => console.log(info))
+    getClientInfo()
+      .then(async (info) => {
+        const { geolocation } = info
+        try {
+          if (navigator.geolocation) {
+            const LatLng = await getClientGeolocation()
+            if (JSON.stringify(LatLng) === JSON.stringify({ lat: 0, lng: 0 })) throw new Error('not allowed')
+            else setLocationAndFocus(LatLng as any)
+          } else throw new Error('dont work')
+        } catch (error) {
+          setLocationAndFocus(geolocation as any)
+        }
+      })
   }, [])
 
   switch (status) {
