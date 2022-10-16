@@ -21,8 +21,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Run simple preflight build
-        run: docker build . --file Dockerfile.test
+      - name: Run simple preflight build on frontend
+        run: docker build ./frontend --file Dockerfile.test
 
   build:
     needs: tests
@@ -49,11 +49,9 @@ jobs:
       - name: Restore cache
         uses: actions/cache@v3
         with:
-          path: |
-            .next/cache
-          # Generate a new cache whenever packages or source files change.
+          context: .
+          path: ./frontend/.next/cache
           key: ${{ runner.os }}-nextjs-${{ '**/pnpm-lock.yaml' }}-${{ hashFiles('**.[jt]s', '**.[jt]sx') }}
-          # If source files changed but packages didn't, rebuild from a prior cache.
           restore-keys: ${{ runner.os }}-nextjs-${{ '**/pnpm-lock.yaml' }}-
 
       - name: Install dependencies
@@ -68,7 +66,8 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
-          path: ./out
+          context: .
+          path: ./frontend/out
 
   deploy:
     needs: build

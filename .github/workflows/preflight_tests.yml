@@ -11,5 +11,5 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Run simple preflight build
-        run: docker build . --file Dockerfile.test
+      - name: Run simple preflight build on frontend
+        run: docker build ./frontend --file Dockerfile.test
