@@ -4,9 +4,15 @@ on:
   push:
     branches: ["production"]
     paths:
-      - 'frontend/**'
+      - "frontend/**"
 
   workflow_dispatch:
+
+  workflow_call:
+    outputs:
+      deploy_target:
+        description: "deploy target"
+        value: ${{ jobs.build.outputs.deploy_target }}
 
 permissions:
   contents: read
@@ -19,6 +25,7 @@ concurrency:
 
 jobs:
   build:
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         NODE-VERSION: [16]
@@ -26,7 +33,9 @@ jobs:
         PNPM-VERSION: [7]
         PROJECT_PATH: [frontend]
 
-    runs-on: ubuntu-latest
+    outputs:
+      deploy_target: ${{ matrix.PROJECT_PATH }}
+
     defaults:
       run:
         working-directory: ./${{ matrix.PROJECT_PATH }}/
@@ -42,7 +51,7 @@ jobs:
         with:
           node-version: ${{ matrix.NODE-VERSION }}
           cache: ${{ matrix.PACKAGE-MANAGER }}
-          cache-dependency-path: './${{ matrix.PROJECT_PATH }}/pnpm-lock.yaml'
+          cache-dependency-path: "./${{ matrix.PROJECT_PATH }}/pnpm-lock.yaml"
 
       - name: Restore cache
         uses: actions/cache@v3
@@ -71,7 +80,7 @@ jobs:
     runs-on: ubuntu-latest
 
     environment:
-      name: frontend-website
+      name: ${{ needs.build.outputs.deploy_target }}-website
       url: ${{ steps.deployment.outputs.page_url }}
 
     steps:
