@@ -25,6 +25,9 @@ jobs:
       packages: write
       id-token: write
 
+    environment:
+      name: package-files
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -58,7 +61,7 @@ jobs:
         with:
           context: ./${{ matrix.PROJECT_PATH }}
           push: ${{ github.event_name != 'pull_request' }}
-          tags: frontend
+          tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
