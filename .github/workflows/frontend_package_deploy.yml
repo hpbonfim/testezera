@@ -1,4 +1,4 @@
-name: Dockerfile CI/CD
+name: Generate frontend package
 
 on:
   push:
@@ -92,4 +92,4 @@ jobs:
       url: https://${{ needs.build.outputs.deploy_tags }}
 
     steps:
-      - run: echo ${{ needs.build.outputs.deploy_target }}-package => https://${{ needs.build.outputs.deploy_tags }}
+      - run: echo "deployment at https://${{ needs.build.outputs.deploy_tags }}"
