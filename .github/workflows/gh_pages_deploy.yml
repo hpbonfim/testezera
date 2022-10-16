@@ -41,7 +41,6 @@ jobs:
         with:
           node-version: ${{ matrix.NODE-VERSION }}
           cache: ${{ matrix.PACKAGE-MANAGER }}
-          cache-dependency-path: './frontend/package-lock.json'
 
       - name: Restore cache
         uses: actions/cache@v3
