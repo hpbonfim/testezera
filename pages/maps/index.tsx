@@ -2,7 +2,7 @@ import React, { useEffect } from 'react'
 import { Wrapper, Status } from "@googlemaps/react-wrapper"
 import Map from './map'
 import Marker from './marker'
-import { getClientGeolocation, getClientInfo } from './functions'
+import { getClientGeolocation, getClientInfo } from '@functions/index'
 
 export default React.memo(() => (
   <Wrapper
