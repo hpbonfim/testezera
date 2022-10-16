@@ -1,7 +1,8 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Wrapper, Status } from "@googlemaps/react-wrapper"
 import Map from './map'
 import Marker from './marker'
+import { getClientGeolocation } from './functions'
 
 export default React.memo(() => (
   <Wrapper
@@ -18,11 +19,15 @@ function Render(status: Status): JSX.Element {
   const [zoom, setZoom] = React.useState(3)
   const [center, setCenter] = React.useState<google.maps.LatLngLiteral | google.maps.LatLng>({ lat: 0, lng: 0 })
 
-  function onClick(e: google.maps.MapMouseEvent) {
-    setMarkers([...markers, e.latLng!])
+  function setLocationAndFocus(LatLng: google.maps.LatLng) {
+    setMarkers([...markers, LatLng])
     setZoom(15)
-    setCenter(e.latLng!)
+    setCenter(LatLng)
   }
+
+  useEffect(() => {
+    getClientGeolocation().then((LatLng) => setLocationAndFocus(LatLng as google.maps.LatLng))
+  }, [])
 
   switch (status) {
     case Status.LOADING:
@@ -36,7 +41,7 @@ function Render(status: Status): JSX.Element {
         <Map
           zoom={zoom}
           center={center}
-          onClick={onClick}
+          onClick={(e: google.maps.MapMouseEvent) => setLocationAndFocus(e.latLng!)}
         >
           {markers.map((latLng, i) => (
             <Marker key={i} position={latLng} />
