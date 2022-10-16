@@ -92,4 +92,4 @@ jobs:
       url: https://${{ needs.build.outputs.deploy_tags }}
 
     steps:
-      - run: echo ${{ needs.build.outputs.deploy_target }}
+      - run: echo ${{ needs.build.outputs.deploy_target }}-package => https://${{ needs.build.outputs.deploy_tags }}
