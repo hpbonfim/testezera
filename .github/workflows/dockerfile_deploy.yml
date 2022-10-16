@@ -25,9 +25,6 @@ jobs:
       packages: write
       id-token: write
 
-    environment:
-      name: package-files
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
