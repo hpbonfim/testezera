@@ -3,6 +3,8 @@ name: Run Simple Preflight Build
 on:
   pull_request:
     branches: ["staging"]
+    paths:
+      - 'frontend/**'
 
   workflow_dispatch:
 
@@ -10,8 +12,6 @@ jobs:
   tests:
     runs-on: ubuntu-latest
     steps:
-      - name: Run simple preflight build on frontend
-        uses: actions/checkout@v2
-        with:
-          context: .
-          run: docker build ./frontend --file Dockerfile.test
+      - uses: actions/checkout@v2
+      - name: Run simple preflight build
+        run: docker build . --file Dockerfile.test
