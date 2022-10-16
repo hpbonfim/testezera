@@ -9,11 +9,15 @@ on:
   workflow_dispatch:
 
 jobs:
-  tests:
+  test_frontend:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        PROJECT_PATH: [frontend]
+
     defaults:
       run:
-        working-directory: ./frontend/
+        working-directory: ./${{ matrix.PROJECT_PATH }}/
 
     steps:
       - uses: actions/checkout@v2
