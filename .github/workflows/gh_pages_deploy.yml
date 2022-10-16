@@ -71,7 +71,7 @@ jobs:
     runs-on: ubuntu-latest
 
     environment:
-      name: ${{ build.matrix.PROJECT_PATH }}-website
+      name: frontend-website
       url: ${{ steps.deployment.outputs.page_url }}
 
     steps:
