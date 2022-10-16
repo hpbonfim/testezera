@@ -2,7 +2,7 @@ import React, { useEffect } from 'react'
 import { Wrapper, Status } from "@googlemaps/react-wrapper"
 import Map from './map'
 import Marker from './marker'
-import { getClientGeolocation } from './functions'
+import { getClientGeolocation, getClientInfo } from './functions'
 
 export default React.memo(() => (
   <Wrapper
@@ -27,6 +27,7 @@ function Render(status: Status): JSX.Element {
 
   useEffect(() => {
     getClientGeolocation().then((LatLng) => setLocationAndFocus(LatLng as google.maps.LatLng))
+    getClientInfo().then((info) => console.log(info))
   }, [])
 
   switch (status) {
