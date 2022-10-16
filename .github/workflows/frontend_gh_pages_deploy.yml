@@ -3,36 +3,42 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: ["production"]
+    paths:
+      - "frontend/**"
 
   workflow_dispatch:
+
+  workflow_call:
+    outputs:
+      deploy_target:
+        description: "deploy target"
+        value: ${{ jobs.build.outputs.deploy_target }}
 
 permissions:
   contents: read
   pages: write
   id-token: write
 
-# Allow one concurrent deployment
 concurrency:
   group: "pages"
   cancel-in-progress: true
 
 jobs:
-  tests:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Run simple preflight build
-        run: docker build . --file Dockerfile.test
-
   build:
-    needs: tests
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         NODE-VERSION: [16]
         PACKAGE-MANAGER: [pnpm]
         PNPM-VERSION: [7]
+        PROJECT_PATH: [frontend]
 
-    runs-on: ubuntu-latest
+    outputs:
+      deploy_target: ${{ matrix.PROJECT_PATH }}
+
+    defaults:
+      run:
+        working-directory: ./${{ matrix.PROJECT_PATH }}/
 
     steps:
       - uses: actions/checkout@v2
@@ -45,15 +51,14 @@ jobs:
         with:
           node-version: ${{ matrix.NODE-VERSION }}
           cache: ${{ matrix.PACKAGE-MANAGER }}
+          cache-dependency-path: "./${{ matrix.PROJECT_PATH }}/pnpm-lock.yaml"
 
       - name: Restore cache
         uses: actions/cache@v3
         with:
           path: |
             .next/cache
-          # Generate a new cache whenever packages or source files change.
           key: ${{ runner.os }}-nextjs-${{ '**/pnpm-lock.yaml' }}-${{ hashFiles('**.[jt]s', '**.[jt]sx') }}
-          # If source files changed but packages didn't, rebuild from a prior cache.
           restore-keys: ${{ runner.os }}-nextjs-${{ '**/pnpm-lock.yaml' }}-
 
       - name: Install dependencies
@@ -68,14 +73,14 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
-          path: ./out
+          path: ./${{ matrix.PROJECT_PATH }}/out
 
   deploy:
     needs: build
     runs-on: ubuntu-latest
 
     environment:
-      name: github-pages
+      name: ${{ needs.build.outputs.deploy_target }}-website
       url: ${{ steps.deployment.outputs.page_url }}
 
     steps:

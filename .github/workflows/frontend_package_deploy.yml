@@ -1,31 +1,43 @@
-name: Dockerfile CI/CD
+name: Generate frontend package
 
 on:
   push:
     branches: ["production"]
+    paths:
+      - "frontend/**"
 
   workflow_dispatch:
 
-jobs:
-  tests:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Run simple preflight build
-        run: docker build . --file Dockerfile.test
+  workflow_call:
+    outputs:
+      deploy_tags:
+        description: "deploy tags"
+        value: ${{ jobs.build.outputs.deploy_tags }}
 
-  deploy:
-    needs: tests
+      deploy_target:
+        description: "deploy target"
+        value: ${{ jobs.build.outputs.deploy_target }}
+
+jobs:
+  build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        REGISTRY: ["ghcr.io"] # Use docker.io for Docker Hub if empty
+        PROJECT_PATH: [frontend]
+
+    outputs:
+      deploy_tags: ${{ steps.meta.outputs.tags }}
+      deploy_target: ${{ matrix.PROJECT_PATH }}
+
+    defaults:
+      run:
+        working-directory: ./${{ matrix.PROJECT_PATH }}/
 
     permissions:
       contents: read
       packages: write
       id-token: write
-
-    strategy:
-      matrix:
-        REGISTRY: ["ghcr.io"] # Use docker.io for Docker Hub if empty
 
     steps:
       - name: Checkout repository
@@ -58,7 +70,7 @@ jobs:
         id: build-and-push
         uses: docker/build-push-action@ac9327eae2b366085ac7f6a2d02df8aa8ead720a
         with:
-          context: .
+          context: ./${{ matrix.PROJECT_PATH }}
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
@@ -70,3 +82,14 @@ jobs:
         env:
           COSIGN_EXPERIMENTAL: "true"
         run: echo "${{ steps.meta.outputs.tags }}" | xargs -I {} cosign sign {}@${{ steps.build-and-push.outputs.digest }}
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    environment:
+      name: ${{ needs.build.outputs.deploy_target }}-package
+      url: https://${{ needs.build.outputs.deploy_tags }}
+
+    steps:
+      - run: echo "deployment at https://${{ needs.build.outputs.deploy_tags }}"

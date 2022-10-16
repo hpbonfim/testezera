@@ -11,10 +11,10 @@ services:
       - portainer:/data
   frontend:
     build:
-      context: ./
+      context: ./frontend/
       dockerfile: Dockerfile
     volumes:
-      - ./:/project
+      - ./frontend:/project
     ports:
       - 80:80
 
