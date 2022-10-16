@@ -10,8 +10,8 @@ jobs:
   tests:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
       - name: Run simple preflight build on frontend
+        uses: actions/checkout@v2
         with:
           context: .
           run: docker build ./frontend --file Dockerfile.test
