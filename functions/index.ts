@@ -1,9 +1,20 @@
-export function getClientGeolocation() {
+import { GetClientInfo } from "./types"
+
+export function getGoogleGeolocation(): Promise<{ lat: number, lng: number }> {
+  return new Promise((resolve) => {
+    fetch(`https://www.googleapis.com/geolocation/v1/geolocate?key=${process.env.NEXT_PUBLIC_GOOGLE_API}`, { method: 'POST' })
+      .then(body => body.json())
+      .then(response => resolve(response.location))
+      .catch(_err => resolve({ lat: 0, lng: 0 }))
+  })
+}
+
+export function getClientGeolocation(): Promise<{ lat: number, lng: number }> {
   return new Promise((resolve) => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
-        (position) => { resolve({ lat: position.coords.latitude, lng: position.coords.longitude } as any as google.maps.LatLng) },
-        (_err) => { resolve({ lat: 0, lng: 0 }) }
+        (position) => resolve({ lat: position.coords.latitude, lng: position.coords.longitude }),
+        (_err) => resolve({ lat: 0, lng: 0 })
       )
     } else {
       resolve({ lat: 0, lng: 0 })
@@ -11,7 +22,7 @@ export function getClientGeolocation() {
   })
 }
 
-export function getClientInfo() {
+export function getClientInfo(): Promise<GetClientInfo> {
   const OS_LIST = [
     { name: 'Windows Phone', value: 'Windows Phone', version: 'OS' },
     { name: 'Windows', value: 'Win', version: 'NT' },
@@ -36,12 +47,12 @@ export function getClientInfo() {
     { name: 'Mozilla', value: 'Mozilla', version: 'Mozilla' }
   ]
 
-  async function getClientIp() {
+  async function getClientIp(): Promise<{ ip: string }> {
     return new Promise((resolve) => {
       fetch('https://api64.ipify.org?format=json')
         .then(body => body.json())
         .then(response => { resolve(response) })
-        .catch(_err => { resolve({ ip: undefined }) })
+        .catch(_err => { resolve({ ip: '' }) })
     })
   }
 
@@ -81,7 +92,8 @@ export function getClientInfo() {
     const agent = [navigator.platform, navigator.userAgent, navigator.appVersion, navigator.vendor].join(' ')
 
     resolve({
-      ip: await getClientIp(),
+      geolocation: await getGoogleGeolocation(),
+      ip: await (await getClientIp()).ip,
       os: matchItem(agent, OS_LIST),
       browser: matchItem(agent, BROWSER_LIST),
       navigator: {
