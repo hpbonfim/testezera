@@ -8,13 +8,27 @@ on:
 
   workflow_dispatch:
 
+  workflow_call:
+    outputs:
+      deploy_tags:
+        description: "deploy tags"
+        value: ${{ jobs.build.outputs.deploy_tags }}
+
+      deploy_target:
+        description: "deploy target"
+        value: ${{ jobs.build.outputs.deploy_target }}
+
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
     strategy:
       matrix:
         REGISTRY: ["ghcr.io"] # Use docker.io for Docker Hub if empty
         PROJECT_PATH: [frontend]
+
+    outputs:
+      deploy_tags: ${{ steps.meta.outputs.tags }}
+      deploy_target: ${{ matrix.PROJECT_PATH }}
 
     defaults:
       run:
@@ -69,6 +83,10 @@ jobs:
           COSIGN_EXPERIMENTAL: "true"
         run: echo "${{ steps.meta.outputs.tags }}" | xargs -I {} cosign sign {}@${{ steps.build-and-push.outputs.digest }}
 
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
     environment:
-      name: ${{ matrix.PROJECT_PATH }}-package
-      url: ${{ steps.meta.outputs.tags }}
+      name: ${{ needs.build.outputs.deploy_target }}-package
+      url: https://${{ needs.build.outputs.deploy_tags }}
