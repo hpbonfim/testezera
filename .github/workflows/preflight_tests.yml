@@ -13,3 +13,5 @@ jobs:
       - uses: actions/checkout@v2
       - name: Run simple preflight build on frontend
         run: docker build ./frontend --file Dockerfile.test
+        with:
+          context: .
