@@ -90,3 +90,6 @@ jobs:
     environment:
       name: ${{ needs.build.outputs.deploy_target }}-package
       url: https://${{ needs.build.outputs.deploy_tags }}
+
+    steps:
+      - run: echo ${{ needs.build.outputs.deploy_target }}
