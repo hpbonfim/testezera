@@ -26,6 +26,9 @@ jobs:
         PNPM-VERSION: [7]
 
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./frontend/
 
     steps:
       - uses: actions/checkout@v2
@@ -38,6 +41,7 @@ jobs:
         with:
           node-version: ${{ matrix.NODE-VERSION }}
           cache: ${{ matrix.PACKAGE-MANAGER }}
+          cache-dependency-path: './frontend/package-lock.json'
 
       - name: Restore cache
         uses: actions/cache@v3
