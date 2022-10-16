@@ -25,10 +25,6 @@ jobs:
       packages: write
       id-token: write
 
-    environment:
-      name: ${{ matrix.PROJECT_PATH }}-package
-      url: ${{ steps.meta.outputs.tags }}
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -72,3 +68,7 @@ jobs:
         env:
           COSIGN_EXPERIMENTAL: "true"
         run: echo "${{ steps.meta.outputs.tags }}" | xargs -I {} cosign sign {}@${{ steps.build-and-push.outputs.digest }}
+
+    environment:
+      name: ${{ matrix.PROJECT_PATH }}-package
+      url: ${{ steps.meta.outputs.tags }}
