@@ -5,9 +5,12 @@
   "main": "index.js",
   "scripts": {
     "dev": "ts-node ./src/index.ts",
+    "studio": "npx prisma studio",
     "db:migrate": "npx prisma migrate dev --name init",
     "db:seed": "ts-node ./prisma/seed.ts",
-    "studio": "npx prisma studio"
+    "docker:build": "docker build . -t testezera/backend",
+    "docker:run": "docker run -p 3000:3000 -d testezera/backend",
+    "docker:exec": "pnpm docker:build && pnpm docker:run"
   },
   "keywords": [],
   "author": "",
