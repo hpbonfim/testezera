@@ -5,6 +5,7 @@
 This example shows how to implement a **REST API with TypeScript** using [Express](https://expressjs.com/) and [Prisma Client](https://www.prisma.io/docs/concepts/components/prisma-client). The example uses an SQLite database file with some initial dummy data which you can find at [`./prisma/dev.db`](./prisma/dev.db).
 
 ## Getting started
+
 (when update schema)
 ```
 npx prisma generate 
@@ -37,6 +38,13 @@ pnpm dev
 
 ```
 npx prisma studio
+```
+
+### (optional) Build and run Docker Image
+```
+docker build . -t testezera/backend
+
+docker run -p 3000:3000 -d testezera/backend
 ```
 
 The server is now running on `http://localhost:3000`. You can now run the API requests, e.g. [`http://localhost:3000/feed`](http://localhost:3000/feed).
