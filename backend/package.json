@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "test": "echo \"no test specified\"",
     "dev": "ts-node ./src/index.ts",
     "studio": "npx prisma studio",
     "db:migrate": "npx prisma migrate dev --name init",
