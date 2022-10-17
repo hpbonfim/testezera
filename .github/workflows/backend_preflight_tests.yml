@@ -1,0 +1,25 @@
+name: backend - Simple Preflight Build
+
+on:
+  pull_request:
+    branches: ["staging"]
+    paths:
+      - 'backend/**'
+
+  workflow_dispatch:
+
+jobs:
+  test_backend:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        PROJECT_PATH: [backend]
+
+    defaults:
+      run:
+        working-directory: ./${{ matrix.PROJECT_PATH }}/
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Run simple preflight build
+        run: docker build . --file Dockerfile.test
