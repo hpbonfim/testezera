@@ -5,6 +5,7 @@ on:
     branches: ["staging"]
     paths:
       - 'frontend/**'
+      - 'backend/**'
 
   workflow_dispatch:
 
@@ -14,6 +15,21 @@ jobs:
     strategy:
       matrix:
         PROJECT_PATH: [frontend]
+
+    defaults:
+      run:
+        working-directory: ./${{ matrix.PROJECT_PATH }}/
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Run simple preflight build
+        run: docker build . --file Dockerfile.test
+
+  test_backend:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        PROJECT_PATH: [backend]
 
     defaults:
       run:

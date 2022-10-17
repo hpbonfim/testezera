@@ -12,4 +12,4 @@ RUN pnpm db:migrate && pnpm db:seed
 
 EXPOSE 3000
 
-ENTRYPOINT ["pnpm", "dev"]
+ENTRYPOINT ["pnpm", "test"]
