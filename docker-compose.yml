@@ -12,11 +12,19 @@ services:
   frontend:
     build:
       context: ./frontend/
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     volumes:
-      - ./frontend:/project
+      - ./frontend:/usr/src/project
     ports:
-      - 80:80
+      - 3001:3000
+  backend:
+    build:
+      context: ./backend/
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./backend:/usr/src/project
+    ports:
+      - 3000:3000
 
 volumes:
   portainer:

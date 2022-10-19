@@ -1,4 +1,3 @@
-
 #Dockerfile
 FROM node:lts-alpine
 
@@ -15,4 +14,4 @@ RUN npm install -g pnpm && pnpm install
 COPY . .
 
 # start the app with secure shell cmd
-ENTRYPOINT ["pnpm", "start"]
+ENTRYPOINT ["pnpm", "dev"]
