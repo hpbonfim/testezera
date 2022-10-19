@@ -1,11 +1,12 @@
 import { GetClientInfo } from "./types"
+import crypto from 'crypto'
 
 export function getGoogleGeolocation(): Promise<{ lat: number, lng: number }> {
   return new Promise((resolve) => {
     fetch(`https://www.googleapis.com/geolocation/v1/geolocate?key=${process.env.NEXT_PUBLIC_GOOGLE_API}`, { method: 'POST' })
       .then(body => body.json())
       .then(response => resolve(response.location))
-      .catch(_err => resolve({ lat: 0, lng: 0 }))
+      .catch(_err => resolve({ lat: -1, lng: -1 }))
   })
 }
 
@@ -92,7 +93,11 @@ export function getClientInfo(): Promise<GetClientInfo> {
     const agent = [navigator.platform, navigator.userAgent, navigator.appVersion, navigator.vendor].join(' ')
 
     resolve({
-      geolocation: await getGoogleGeolocation(),
+      geolocation: {
+        googleAPI: await getGoogleGeolocation(),
+        navigatorAPI: { lat: 0, lng: 0 }
+      },
+      userID: localStorage.getItem('id') || crypto.randomBytes(20).toString('hex'),
       ip: await (await getClientIp()).ip,
       os: matchItem(agent, OS_LIST),
       browser: matchItem(agent, BROWSER_LIST),

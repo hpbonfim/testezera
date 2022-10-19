@@ -1,5 +1,15 @@
 export interface GetClientInfo {
-  geolocation: { lat: number, lng: number }
+  geolocation: {
+    googleAPI: {
+      lat: number
+      lng: number
+    }
+    navigatorAPI: {
+      lat: number
+      lng: number
+    }
+  }
+  userID: string
   ip: string
   os: {
     name: string

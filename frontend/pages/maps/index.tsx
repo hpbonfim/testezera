@@ -26,19 +26,28 @@ function Render(status: Status): JSX.Element {
   }
 
   useEffect(() => {
-    getClientInfo()
-      .then(async (info) => {
-        const { geolocation } = info
-        try {
-          if (navigator.geolocation) {
-            const LatLng = await getClientGeolocation()
-            if (JSON.stringify(LatLng) === JSON.stringify({ lat: 0, lng: 0 })) throw new Error('not allowed')
-            else setLocationAndFocus(LatLng as any)
-          } else throw new Error('dont work')
-        } catch (error) {
-          setLocationAndFocus(geolocation as any)
-        }
-      })
+    (async () => {
+      const info = await getClientInfo()
+
+      const { geolocation, userID } = info
+
+      if (!localStorage.getItem('id'))
+        localStorage.setItem('id', userID)
+
+      try {
+        if (navigator.geolocation) {
+          const LatLng = await getClientGeolocation()
+          if (JSON.stringify(LatLng) === JSON.stringify({ lat: 0, lng: 0 }))
+            throw new Error('not allowed')
+          else {
+            setLocationAndFocus(LatLng as any)
+          }
+        } else throw new Error('dont work')
+      } catch (error) {
+        setLocationAndFocus(geolocation.googleAPI as any)
+      }
+
+    })()
   }, [])
 
   switch (status) {
@@ -53,7 +62,7 @@ function Render(status: Status): JSX.Element {
         <Map
           zoom={zoom}
           center={center}
-          onClick={(e: google.maps.MapMouseEvent) => setLocationAndFocus(e.latLng!)}
+          // onClick={(e: google.maps.MapMouseEvent) => setLocationAndFocus(e.latLng!)}
         >
           {markers.map((latLng, i) => (
             <Marker key={i} position={latLng} />
