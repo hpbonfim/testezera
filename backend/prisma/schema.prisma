@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -10,51 +7,21 @@ datasource db {
   url      = "file:./dev.db"
 }
 
-model Client {
-  id          Int          @id @default(autoincrement())
-  uuid_id     String?      @unique
-  createdAt   DateTime     @default(now())
-  ip_address  String
-  browser     Browser?
-  geolocation Geolocation?
-  navigator   Navigator?
-  os          Os?
+model User {
+  id    Int     @id @default(autoincrement())
+  email String  @unique
+  name  String?
+  posts Post[]
 }
 
-model Browser {
+model Post {
   id        Int      @id @default(autoincrement())
-  client    Client?   @relation(fields: [client_id], references: [uuid_id])
-  client_id String   @unique
   createdAt DateTime @default(now())
-  name      String
-  version   Int      @default(0)
-}
-
-model Geolocation {
-  id             Int      @id @default(autoincrement())
-  client         Client?   @relation(fields: [client_id], references: [uuid_id])
-  client_id      String   @unique
-  createdAt      DateTime @default(now())
-  google_api     String
-  navigation_api String
-}
-
-model Navigator {
-  id         Int      @id @default(autoincrement())
-  client     Client?   @relation(fields: [client_id], references: [uuid_id])
-  client_id  String   @unique
-  createdAt  DateTime @default(now())
-  appVersion String
-  platform   String
-  userAgent  String
-  vendor     String
-}
-
-model Os {
-  id        Int      @id @default(autoincrement())
-  client    Client?   @relation(fields: [client_id], references: [uuid_id])
-  client_id String   @unique
-  createdAt DateTime @default(now())
-  name      String
-  version   Int      @default(0)
+  updatedAt DateTime @updatedAt
+  title     String
+  content   String?
+  published Boolean  @default(false)
+  viewCount Int      @default(0)
+  author    User?    @relation(fields: [authorId], references: [id])
+  authorId  Int?
 }
